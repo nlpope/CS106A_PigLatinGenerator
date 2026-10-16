@@ -14,7 +14,7 @@ public class CS106A_PigLatinGenerator extends ConsoleProgram
 {
 	/* Named constants */
 	private static final String SENTINEL = "exit";
-	private static final String DELIMITERS = "!@#$%^&*()_-+={[}]:;\"'<,>.?/~`/\\ ";
+	private static final String DELIMITERS = "\n!@#$%^&*()_-+={[}]:;\"'<,>.?/~`/\\ ";
 	
 	/* Enumerations */
 	public enum Errors
@@ -40,8 +40,8 @@ public class CS106A_PigLatinGenerator extends ConsoleProgram
 				break;
 			}
 			
-			if (isAWord(clientInput.trim())){
-				println(convertToPigLatin(clientInput));
+			if (isAWord(clientInput.replaceAll("\\s+", ""))){
+				println(translateWord(clientInput));
 			} else {
 				println(Errors.NOTALLWORDS.value);
 			}
@@ -55,14 +55,20 @@ public class CS106A_PigLatinGenerator extends ConsoleProgram
 	}
 	
 	
-	private String convertToPigLatin(String clientInput)
+	private String translateWord(String clientInput)
 	{
 		String pigVersion = "";
 
 		for (int i = 0; i < clientInput.length(); i++){
 			for (int j = 0; j < DELIMITERS.length(); j++){
-				Character c = (Character) clientInput.charAt(i);
-				if (c.equals(DELIMITERS.charAt(j))){ pigVersion += c; }
+				Character ci = (Character) clientInput.charAt(i);
+				if (ci.equals(DELIMITERS.charAt(j))){ 
+					String token = clientInput.substring(i-1, i-1);
+					int firstVowelPosition = findFirstVowelPosition(token);
+					String head = clientInput.substring(i-1);
+					pigVersion += ci; 
+					break; 	
+				}
 			}
 		}
 		
@@ -70,16 +76,30 @@ public class CS106A_PigLatinGenerator extends ConsoleProgram
 	}
 	
 	
+	private int findFirstVowelPosition(String st)
+	{
+		
+	}
+	
+	
 	private boolean isAWord(String word)
 	{
 		if (word.length() == 0) { return false; } 
 		for (int i = 0; i < word.length(); i++){
-			boolean firstCase = word.charAt(i) < 65 || word.charAt(i) > 90;
-			boolean secondCase = word.charAt(i) < 97 || word.charAt(i) > 122;
-			if (firstCase && secondCase){ return false; }
+			boolean notUpperCase = word.charAt(i) < 65 || word.charAt(i) > 90;
+			boolean notLowerCase = word.charAt(i) < 97 || word.charAt(i) > 122;
+			boolean notDelimiter = true;
+			
+			for (int j = 0; j < DELIMITERS.length(); j++){
+				Character ci = (Character) word.charAt(i);
+				if (ci.equals(DELIMITERS.charAt(j))){ notDelimiter = false; break; }
+			}
+			
+			if (notUpperCase && notLowerCase && notDelimiter){ return false; }
 		}
 		return true;
 	}
 	
 	/* Instance variables */
+	private String pigVersion = "";
 }
