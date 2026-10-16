@@ -8,7 +8,7 @@
  **/
 
 import acm.program.*;
-import java.util.*;
+//import java.util.*;
 
 public class CS106A_PigLatinGenerator extends ConsoleProgram
 {
@@ -31,14 +31,20 @@ public class CS106A_PigLatinGenerator extends ConsoleProgram
 	public void run()
 	{
 		introduceApp();
+		
 		while (true){
 			String clientInput = readLine("Enter phrase to be converted: ");
+			
 			if (clientInput.equals(SENTINEL)){
 				println("goodbye");
 				break;
 			}
 			
-			println(convertToPigLatin(clientInput));
+			if (isAWord(clientInput.trim())){
+				println(convertToPigLatin(clientInput));
+			} else {
+				println(Errors.NOTALLWORDS.value);
+			}
 		}
 	}
 	
@@ -53,19 +59,11 @@ public class CS106A_PigLatinGenerator extends ConsoleProgram
 	{
 		String pigVersion = "";
 
-		try {
-			StringTokenizer tokenizer = new StringTokenizer(clientInput, DELIMITERS, true);
-			while (tokenizer.hasMoreTokens()){
-				String token = tokenizer.nextToken();
-				if (isAWord(token)){
-					
-				} else {
-					println(Errors.NOTALLWORDS.value);
-					return "" + (Errors.NOTALLWORDS.value);
-				}
+		for (int i = 0; i < clientInput.length(); i++){
+			for (int j = 0; j < DELIMITERS.length(); j++){
+				Character c = (Character) clientInput.charAt(i);
+				if (c.equals(DELIMITERS.charAt(j))){ pigVersion += c; }
 			}
-		} catch (NullPointerException e) {
-			return "NullPointerError occurred: /(e)";
 		}
 		
 		return pigVersion;
