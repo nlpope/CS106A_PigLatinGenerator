@@ -14,7 +14,6 @@ public class CS106A_PigLatinGenerator extends ConsoleProgram
 {
 	/* Named constants */
 	private static final String SENTINEL = "exit";
-	private static final String DELIMITERS = "\n!@#$%^&*()_-+={[}]:;\"'<,>.?/~`/\\ ";
 	
 	/* Enumerations */
 	public enum Errors
@@ -40,11 +39,7 @@ public class CS106A_PigLatinGenerator extends ConsoleProgram
 				break;
 			}
 			
-			if (isAWord(clientInput.replaceAll("\\s+", ""))){
-				println(translateWord(clientInput));
-			} else {
-				println(Errors.NOTALLWORDS.value);
-			}
+			println(translateSentence(clientInput));
 		}
 	}
 	
@@ -55,49 +50,54 @@ public class CS106A_PigLatinGenerator extends ConsoleProgram
 	}
 	
 	
-	private String translateWord(String clientInput)
+	private String translateSentence(String sentence)
 	{
-		String pigVersion = "";
-
-		for (int i = 0; i < clientInput.length(); i++){
-			for (int j = 0; j < DELIMITERS.length(); j++){
-				Character ci = (Character) clientInput.charAt(i);
-				if (ci.equals(DELIMITERS.charAt(j))){ 
-					String token = clientInput.substring(i-1, i-1);
-					int firstVowelPosition = findFirstVowelPosition(token);
-					String head = clientInput.substring(i-1);
-					pigVersion += ci; 
-					break; 	
-				}
-			}
+		String result = "";
+		String trimmedSentence = sentence.trim();
+		for (int i = 0,
+				 j = 0; 
+			     i < trimmedSentence.length(); 
+			     i = j){
+			
+			j = sentence.indexOf(" ", i);
+			if (j == -1){ break; }
+			result += translateWord(sentence.substring(i, j-1)) + " ";
+			
+			boolean upperCaseLetter = sentence.charAt(j) > 64 || sentence.charAt(j) < 91;
+			boolean lowerCaseLetter = sentence.charAt(j) > 96 || sentence.charAt(j) < 123;
+			while (!upperCaseLetter && !lowerCaseLetter){ j++; }
 		}
 		
-		return pigVersion;
+		return result;
 	}
 	
 	
-	private int findFirstVowelPosition(String st)
-	{
-		
+	private String translateWord(String word)
+	{	
+		int vp = findFirstVowelPosition(word);
+		if (vp == -1){ 
+			return word;
+		} else if (vp == 0){
+			return word + "way";
+		} else {
+			String head = word.substring(0, vp);
+			String tail = word.substring(vp);
+			return tail + head + "ay";
+		}
 	}
 	
 	
-	private boolean isAWord(String word)
+	private int findFirstVowelPosition(String str)
 	{
-		if (word.length() == 0) { return false; } 
-		for (int i = 0; i < word.length(); i++){
-			boolean notUpperCase = word.charAt(i) < 65 || word.charAt(i) > 90;
-			boolean notLowerCase = word.charAt(i) < 97 || word.charAt(i) > 122;
-			boolean notDelimiter = true;
-			
-			for (int j = 0; j < DELIMITERS.length(); j++){
-				Character ci = (Character) word.charAt(i);
-				if (ci.equals(DELIMITERS.charAt(j))){ notDelimiter = false; break; }
+		str = str.toLowerCase();
+		char[] vowels = new char[]{'a','e','i','o','u'};
+		for (int i = 0; i < str.length(); i++){
+			for (char c : vowels){
+				if (str.charAt(i) == c){ return i; }
 			}
-			
-			if (notUpperCase && notLowerCase && notDelimiter){ return false; }
 		}
-		return true;
+		
+		return -1;
 	}
 	
 	/* Instance variables */
