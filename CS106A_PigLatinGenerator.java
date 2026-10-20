@@ -53,18 +53,20 @@ public class CS106A_PigLatinGenerator extends ConsoleProgram
 	private String translateSentence(String sentence)
 	{
 		String result = "";
-		String trimmedSentence = sentence.trim();
+		String trimmedSentence = sentence.trim() + " ";
 		for (int i = 0,
 				 j = 0; 
 			     i < trimmedSentence.length(); 
-			     i = j){
+			     i = j + 1){
 			
-			j = sentence.indexOf(" ", i);
+			j = trimmedSentence.indexOf(" ", i);
+			//breaking too early
 			if (j == -1){ break; }
-			result += translateWord(sentence.substring(i, j-1)) + " ";
+			result += translateWord(sentence.substring(i, j)) + " ";
 			
-			boolean upperCaseLetter = sentence.charAt(j) > 64 || sentence.charAt(j) < 91;
-			boolean lowerCaseLetter = sentence.charAt(j) > 96 || sentence.charAt(j) < 123;
+			
+			boolean upperCaseLetter = trimmedSentence.charAt(j) > 64 || trimmedSentence.charAt(j) < 91;
+			boolean lowerCaseLetter = trimmedSentence.charAt(j) > 96 || trimmedSentence.charAt(j) < 123;
 			while (!upperCaseLetter && !lowerCaseLetter){ j++; }
 		}
 		
